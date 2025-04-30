@@ -1,0 +1,57 @@
+﻿@model Lucilvio.Study.Htmx.Pages.Home.TasksModel
+
+<h2>@Model.TaskListName</h2>
+
+<div id="newTaskDiv">
+    <input id="taskListIdInput" name="taskListId" value="@Model.TaskListId" type="hidden" />
+    <input id="newTaskInput" name="newTaskName" type="text" placeholder="Task title..." required />
+
+    <button id="addTaskButton"
+            hx-trigger="click"
+            hx-post="home?handler=addTask"
+            hx-swap="none"
+            hx-include="#taskListIdInput, #newTaskInput" ,
+            hx-on::after-request="document.querySelector('#newTaskInput').value = ''">
+        <i>+</i>
+    </button>
+</div>
+
+<div id="taskCounter">
+    @Model.TotalCompletedTasks / @Model.TotalTasks
+</div>
+
+<ul>
+    @foreach (var task in Model.Tasks)
+    {
+        <li>
+            @if (task.IsCompleted)
+            {
+                <input id="task-@task.Id"
+                       type="checkbox"
+                       checked
+                       hx-trigger="click"
+                       hx-swap="none"
+                       hx-put="home?handler=ToggleTaskState&taskListId=@task.TaskListId&taskId=@task.Id" />
+
+                <label for="@task.Id" class="text-decoration-line-through">@task.Name</label>
+            }
+            else
+            {
+                <input id="task-@task.Id"
+                       type="checkbox"
+                       hx-trigger="click"
+                       hx-swap="none"
+                       hx-put="home?handler=ToggleTaskState&taskListId=@task.TaskListId&taskId=@task.Id" />
+
+                <label for="@task.Id">@task.Name</label>
+            }
+
+            <button hx-delete="home?handler=RemoveTask&taskListId=@task.TaskListId&taskId=@task.Id" 
+                    hx-confirm="Do you really want to delete the task?"
+                    @* hx-vals="js:{ taskListId: '@task.TaskListId' }" *@
+                    hx-swap="#none">
+                    X
+            </button>
+        </li>
+    }
+</ul>

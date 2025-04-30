@@ -1,0 +1,39 @@
+﻿@model Lucilvio.Study.Htmx.Pages.Home.TaskListsModel
+
+<h2>Task Lists</h2>
+
+<div id="newTaskListDiv">
+    <input id="newTaskListInput" name="newTaskListName" placeholder="Task List name..." required />
+
+    <button id="addTaskListButton"
+            hx-trigger="click"
+            hx-post="home?handler=addTaskList"
+            hx-swap="none"
+            hx-include="#newTaskListInput"
+            hx-on::after-request="document.querySelector('#newTaskListInput').value = ''">
+        +
+    </button>
+</div>
+
+<ul>
+    @foreach (var taskList in Model.PredefinedTaskLists)
+    {
+        <li>
+            <label for="@taskList.Id" hx-post="home?handler=SelectTaskList&taskListId=@taskList.Id" hx-trigger="click" hx-swap="none" >@taskList.Name</label>
+        </li>
+    }
+</ul>
+
+<hr />
+
+<ul>
+    @foreach (var taskList in Model.TaskLists)
+    {
+        <li>
+            <label for="@taskList.Id" hx-post="home?handler=SelectTaskList&taskListId=@taskList.Id" hx-trigger="click" hx-swap="none">@taskList.Name</label>
+            <button hx-delete="home?handler=RemoveTaskList&taskListId=@taskList.Id" hx-confirm="Do you really want to delete the task list?" hx-target="#taskLists">
+                <i>X</i>
+            </button>
+        </li>
+    }
+</ul>

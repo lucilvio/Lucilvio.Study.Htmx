@@ -1,0 +1,51 @@
+﻿@page "/Home"
+@model Lucilvio.Study.Htmx.Pages.Home.HomeModel
+@{
+}
+
+@section Scripts {
+    <script>
+        htmx.on("#newTaskDiv", "htmx:beforeRequest", (evt) => {
+            let inputValidation = [];
+
+            const sourceElement = evt.detail.elt;
+
+            sourceElement.querySelectorAll("input").forEach(e => inputValidation.push(e.reportValidity()));
+
+            if(inputValidation.some(iv => !iv))
+                evt.preventDefault();
+        });
+
+        htmx.on("#newTaskListDiv", "htmx:beforeRequest", (evt) => {
+            let inputValidation = [];
+
+            const sourceElement = evt.detail.elt;
+
+            sourceElement.querySelectorAll("input").forEach(e => inputValidation.push(e.reportValidity()));
+
+            if(inputValidation.some(iv => !iv))
+                evt.preventDefault();
+        });
+    </script>
+}
+
+<div class="row">
+    <div class="col-3">
+        <div id="taskLists"
+             hx-trigger="updateTaskLists"
+             hx-get="home?handler=TaskLists"
+             hx-vals="js:{ selectedTaskListId: event.detail.taskListId  }"
+             hx-target="#taskLists">
+            @await Html.PartialAsync("_TaskLists", new TaskListsModel(Guid.Empty, Model.TaskLists))
+        </div>
+    </div>
+    <div class="col">
+        <div id="tasks"
+             hx-trigger="updateTasks from:body" 
+             hx-get="home?handler=Tasks" 
+             hx-vals="js:{ selectedTaskListId: event.detail.taskListId  }" 
+             hx-target="#tasks">
+            @await Html.PartialAsync("_Tasks", new TasksModel(Model.TaskLists.FirstOrDefault()))
+        </div>
+    </div>
+</div>
