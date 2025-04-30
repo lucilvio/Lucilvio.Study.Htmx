@@ -2,38 +2,52 @@
 
 <h2>Task Lists</h2>
 
-<div id="newTaskListDiv">
-    <input id="newTaskListInput" name="newTaskListName" placeholder="Task List name..." required />
-
-    <button id="addTaskListButton"
-            hx-trigger="click"
-            hx-post="home?handler=addTaskList"
-            hx-swap="none"
-            hx-include="#newTaskListInput"
-            hx-on::after-request="document.querySelector('#newTaskListInput').value = ''">
-        +
-    </button>
-</div>
-
-<ul>
+<div class="list-group">
     @foreach (var taskList in Model.PredefinedTaskLists)
     {
-        <li>
-            <label for="@taskList.Id" hx-post="home?handler=SelectTaskList&taskListId=@taskList.Id" hx-trigger="click" hx-swap="none" >@taskList.Name</label>
-        </li>
+        <a href="#" class="list-group-item list-group-item-action"
+           hx-post="home?handler=SelectTaskList&taskListId=@taskList.Id"
+           hx-trigger="click"
+           hx-swap="none">
+            <i class="bi bi-list-task me-2"></i> <!-- Bootstrap Icon for "Task List" -->
+            @taskList.Name
+        </a>
     }
-</ul>
+</div>
 
-<hr />
-
-<ul>
+<div class="list-group">
     @foreach (var taskList in Model.TaskLists)
     {
-        <li>
-            <label for="@taskList.Id" hx-post="home?handler=SelectTaskList&taskListId=@taskList.Id" hx-trigger="click" hx-swap="none">@taskList.Name</label>
-            <button hx-delete="home?handler=RemoveTaskList&taskListId=@taskList.Id" hx-confirm="Do you really want to delete the task list?" hx-target="#taskLists">
-                <i>X</i>
+        <div class="d-flex justify-content-between align-items-center list-group-item">
+            <a href="#" class="text-decoration-none"
+               hx-post="home?handler=SelectTaskList&taskListId=@taskList.Id"
+               hx-trigger="click"
+               hx-swap="none">
+                <i class="bi bi-list-task me-2"></i> <!-- Bootstrap Icon for "Task List" -->
+                @taskList.Name
+            </a>
+            <button class="btn btn-sm btn-danger"
+                    hx-delete="home?handler=RemoveTaskList&taskListId=@taskList.Id"
+                    hx-confirm="Do you really want to delete the task list?"
+                    hx-target="#taskLists">
+                <i class="bi bi-trash"></i> <!-- Bootstrap Icon for "Delete" -->
             </button>
-        </li>
+        </div>
     }
-</ul>
+</div>
+
+<hr class="my-4" />
+
+<div id="newTaskListDiv" class="mt-3">
+    <div class="input-group">
+        <input id="newTaskListInput" name="newTaskListName" class="form-control" placeholder="Task List name..." required />
+        <button id="addTaskListButton" class="btn btn-primary"
+                hx-trigger="click"
+                hx-post="home?handler=addTaskList"
+                hx-swap="none"
+                hx-include="#newTaskListInput"
+                hx-on::after-request="document.querySelector('#newTaskListInput').value = ''">
+            <i class="bi bi-plus"></i> <!-- Bootstrap Icon for "Add" -->
+        </button>
+    </div>
+</div>

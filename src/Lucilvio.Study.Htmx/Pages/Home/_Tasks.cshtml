@@ -1,56 +1,71 @@
 ﻿@model Lucilvio.Study.Htmx.Pages.Home.TasksModel
 
-<h2>@Model.TaskListName</h2>
+<h2 class="mb-4 d-flex align-items-center">
+    <i class="bi bi-list-task me-2"></i> <!-- List icon before TaskListName -->
+    <span>@Model.TaskListName</span>
+    <div id="taskCounter" class="ms-3">
+        <span class="badge bg-success">
+            <small>@Model.TotalCompletedTasks</small> <!-- Smaller font size -->
+        </span> /
+        <span class="badge bg-secondary">
+            <small>@Model.TotalTasks</small> <!-- Smaller font size -->
+        </span>
+    </div>
+</h2>
 
-<div id="newTaskDiv">
-    <input id="taskListIdInput" name="taskListId" value="@Model.TaskListId" type="hidden" />
-    <input id="newTaskInput" name="newTaskName" type="text" placeholder="Task title..." required />
-
-    <button id="addTaskButton"
-            hx-trigger="click"
-            hx-post="home?handler=addTask"
-            hx-swap="none"
-            hx-include="#taskListIdInput, #newTaskInput" ,
-            hx-on::after-request="document.querySelector('#newTaskInput').value = ''">
-        <i>+</i>
-    </button>
+<div id="newTaskDiv" class="mb-3">
+    <div class="input-group">
+        <input id="taskListIdInput" name="taskListId" value="@Model.TaskListId" type="hidden" />
+        <input id="newTaskInput" name="newTaskName" class="form-control rounded" type="text" placeholder="Task title..." required />
+        <span class="input-group-text bg-primary text-white" id="addTaskButton"
+              hx-trigger="click"
+              hx-post="home?handler=addTask"
+              hx-swap="none"
+              hx-include="#taskListIdInput, #newTaskInput"
+              hx-on::after-request="document.querySelector('#newTaskInput').value = ''">
+            <i class="bi bi-plus"></i> <!-- Add button icon inside the input -->
+        </span>
+    </div>
 </div>
 
-<div id="taskCounter">
-    @Model.TotalCompletedTasks / @Model.TotalTasks
-</div>
-
-<ul>
+<ul class="list-group">
     @foreach (var task in Model.Tasks)
     {
-        <li>
-            @if (task.IsCompleted)
-            {
-                <input id="task-@task.Id"
-                       type="checkbox"
-                       checked
-                       hx-trigger="click"
-                       hx-swap="none"
-                       hx-put="home?handler=ToggleTaskState&taskListId=@task.TaskListId&taskId=@task.Id" />
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+                @if (task.IsCompleted)
+                {
+                    <input id="task-@task.Id"
+                           type="checkbox"
+                           class="form-check-input me-2"
+                           checked
+                           hx-trigger="click"
+                           hx-swap="none"
+                           hx-put="home?handler=ToggleTaskState&taskListId=@task.TaskListId&taskId=@task.Id" />
 
-                <label for="@task.Id" class="text-decoration-line-through">@task.Name</label>
-            }
-            else
-            {
-                <input id="task-@task.Id"
-                       type="checkbox"
-                       hx-trigger="click"
-                       hx-swap="none"
-                       hx-put="home?handler=ToggleTaskState&taskListId=@task.TaskListId&taskId=@task.Id" />
+                    <label for="task-@task.Id" class="form-check-label text-decoration-line-through">
+                        @task.Name
+                    </label>
+                }
+                else
+                {
+                    <input id="task-@task.Id"
+                           type="checkbox"
+                           class="form-check-input me-2"
+                           hx-trigger="click"
+                           hx-swap="none"
+                           hx-put="home?handler=ToggleTaskState&taskListId=@task.TaskListId&taskId=@task.Id" />
 
-                <label for="@task.Id">@task.Name</label>
-            }
-
-            <button hx-delete="home?handler=RemoveTask&taskListId=@task.TaskListId&taskId=@task.Id" 
+                    <label for="task-@task.Id" class="form-check-label">
+                        @task.Name
+                    </label>
+                }
+            </div>
+            <button class="btn btn-sm btn-danger"
+                    hx-delete="home?handler=RemoveTask&taskListId=@task.TaskListId&taskId=@task.Id"
                     hx-confirm="Do you really want to delete the task?"
-                    @* hx-vals="js:{ taskListId: '@task.TaskListId' }" *@
-                    hx-swap="#none">
-                    X
+                    hx-swap="none">
+                <i class="bi bi-trash"></i>
             </button>
         </li>
     }
